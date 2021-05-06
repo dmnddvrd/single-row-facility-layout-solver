@@ -1,0 +1,19 @@
+stages:
+  - lint
+
+lint:
+  stage: lint
+  image: node:12.13.0-alpine
+  before_script:
+    # install local dependencies
+    - npm i
+    # install dependencies of all subprojects
+    - npm start
+  script:
+    # run ESlint
+    - npx eslint .
+  cache:
+    paths:
+      - "node_modules/"
+      - "**/node_modules"
+      - "**/**/node_modules"

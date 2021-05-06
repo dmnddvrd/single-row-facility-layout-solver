@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="hu">
+    
+    <head>
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="/css/admin.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+        <script src="/js/forms.js"></script>
+        <script src="/js/admin.js"></script>
+        <title>Timetable management</title>
+    </head>
+
+
+    <div id="header">
+        <div id="logo" onclick="location.href = '/'">Go to Front page</div>
+        <div id="user" class="dropdown">
+            <div id="name" class="dropbtn">
+                {{#ifDefined name }}
+                    {{this}}
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="/my-reservations">My reservations</a>
+                        <a href="/logout">Log out</a>
+                    </div>
+                {{else}}
+                    <a href="/login">Log in</a></div>
+                {{/ifDefined}}
+        </div>
+    </div>
+
+    <div id="content">
+        <div class="form-container">
+
+            <div id="schedules">
+                <table id="schedules-table">
+                    <tr>
+                      <th>ID</th>
+                      <th>From</th>
+                      <th>Destination</th>
+                      <th>Frequency</th>
+                      <th>Hour</th>
+                      <th>Type</th>
+                      <th>Price</th>
+                    </tr>
+                    {{#each schedules}}
+                        <tr class="schedule" id="{{ id }}">
+                            <td>{{ id }}</td>
+                            <td>{{ from }}</td>
+                            <td>{{ to }}</td>
+                            <td>{{ days }}</td>
+                            <td>{{ hour }}:00</td>
+                            <td>{{ type }}</td>
+                            <td>{{ price }}RON</td>
+                        </tr>
+                    {{/each}}
+                  </table>
+            </div>  
+
+            <div id="spacer">
+                <br>
+                <!-- Element to make space between the other two elements -->
+            </div>
+
+            <div id="query" style="height: 480px;">
+                <form action="/schedules/all">
+                    <p>ADMIN PANEL</p>
+
+                    <label for="from">From</label>
+                    <input type="text" id="from" name="from" placeholder="Satu Mare">
+
+                    <label for="to">Destination</label>
+                    <input type="text" id="to" name="to" placeholder="Cluj-Napoca">
+
+                    <label for="frequency">Frequency</label>
+                    <select class="frequency-select" id="frequency" name="frequency">
+                        <option value="All" selected>All</option>
+                        <option value="Weekdays">Weekdays</option>
+                        <option value="Weekends">Weekends</option>
+                      </select>
+                    
+                    <label for="hour">Hour</label>
+                    <input type="text" id="hour" name="hour" placeholder="12">
+                    
+                    <label for="type">Type</label>
+                    <select class="frequency-select" id="type" name="type">
+                        <option value="CFR" selected>CFR</option>
+                        <option value="International">International</option>
+                        <option value="Night train">Night train</option>
+                        <option value="High-speed">High-speed</option>
+                      </select>
+
+                    <label for="price">Price(RON)</label>
+                    <input type="text" id="price" name="price" placeholder="25">
+
+                    <br>
+                    
+                    <input id="schedule-create-btn" type="button" value="Create route">
+                  </form>
+            </div>
+
+        </div>
+    </div>
+    
+
+</html>

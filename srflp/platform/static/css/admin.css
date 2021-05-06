@@ -1,0 +1,22 @@
+#schedules-table tr:not(:first-child):hover {
+    text-decoration: line-through;
+    color: red;
+    cursor: pointer;
+}
+
+#schedule-create-btn {
+    color: white;
+    background-color: rgb(238, 167, 13);
+    cursor: pointer;
+}
+
+.disabled {
+    background-color: grey !important;
+}
+
+.incorrect {
+    border: 2px solid red !important;
+} 
+.frequency-select *{
+    text-align: center;
+}

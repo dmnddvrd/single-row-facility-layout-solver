@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+  <head>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/register.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <script src="/js/register.js"></script>
+    <title>Create an account</title>
+  </head>
+    
+  <div id="content">
+    <div class="register-form-container">
+      <form class="register-form">
+        <div class="title-container">
+          Register
+        </div>
+        <div id="err-msg" style="display:none; color:red;"></div>
+        <input type="text" name="email"  id="email" placeholder="Your Email" required>
+        <input type="text" name="name" id="name" placeholder="Your name" required> 
+        <input type="username" name="username" id="username"  placeholder="Choose a username" required>
+        <input type="password" name="password" id="password"  placeholder="Choose a Password" required>
+        <input id="register-btn" type="button" value="Register">
+        <a href="./login">Already have an account?</a>
+      </form>
+    </div>
+  </div>
+    
+</html>

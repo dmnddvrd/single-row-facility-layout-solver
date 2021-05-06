@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+    <head>
+        <link rel="stylesheet" href="/css/style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+        <script src="/js/forms.js"></script>
+        <script src="/js/index.js"></script>
+        <title>Browse our timetable</title>
+    </head>
+
+    <div id="header">
+        <div id="logo" onclick="location.href = '/admin'">Go to Admin Panel</div>
+        <div id="user" class="dropdown">
+            <div id="name" class="dropbtn">
+                {{#ifDefined name }}
+                    {{this}}
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="/my-reservations">My reservations</a>
+                        <a href="/logout">Log out</a>
+                    </div>
+                {{else}}
+                    <a href="/login">Log in</a></div>
+                {{/ifDefined}}
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div class="form-container">
+
+            <div id="schedules">
+                <table id="schedules-table">
+                    <tr>
+                      <th>ID</th>
+                      <th>From</th>
+                      <th>Destination</th>
+                      <th>Hour</th>
+                      <th>Price</th>
+                    </tr>
+                    {{#each schedules}}
+                        <tr class="schedule" id="{{ id }}">
+                            <td>{{ id }}</td>
+                            <td>{{ from }}</td>
+                            <td>{{ to }}</td>
+                            <td>{{ hour }}:00</td>
+                            <td>{{ price }}RON</td>
+                        </tr>
+                    {{/each}}
+                  </table>
+            </div>  
+
+            <div id="spacer">
+                <br>
+                <!-- Element to make space between the other two elements -->
+            </div>
+
+            <div id="query">
+                <form action="/schedules/all">
+                    <label for="from">From</label>
+                    <input type="text" id="from" name="from" placeholder="Satu mare">
+                    <br>
+                    <label for="to">To</label>
+                    <input type="text" id="to" name="to" placeholder="Cluj-Napoca">
+                    <br>
+                    
+                    <label for="minPrice">Minimum price(RON)</label>
+                    <input type="text" id="minPrice" name="minPrice" placeholder="0">
+                    <br>
+                    
+                    <label for="maxPrice">Maximum price(RON)</label>
+                    <input type="text" id="maxPrice" name="maxPrice" placeholder="100">
+                    <br>
+                
+                    <input id="schedule-btn" type="button" value="Find Routes">
+                  </form>
+            </div>
+
+        </div>
+    </div>
+
+</html>

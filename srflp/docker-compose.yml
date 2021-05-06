@@ -1,0 +1,43 @@
+version: "3.5"
+
+services:
+  sftp:
+    ports:
+      - '22:22'
+    container_name: sftp
+    build: ./sftp-storage
+    volumes:
+      - ./sftp-storage/contents:/home/demo/sftp/
+    
+  srflp_platform:
+    ports:
+      - '8000:8080'
+    container_name: srflp_platform
+    build: ./platform
+    volumes:
+      - ./platform:/srflp-platform
+
+  airflow:
+    build: ./airflow
+    restart: always
+    container_name: airflow
+    volumes:
+      - ./airflow/config/airflow.cfg:/usr/local/airflow/airflow.cfg
+      - ./airflow/config/dags:/usr/local/airflow/dags
+      - ./airflow/srflp_solver:/usr/local/airflow/srflp-solver
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "airflow", "8080" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    command: bash -c "cd .. && ls -l  && ./entrypoint.sh"
+
+  srflp_db:
+    container_name: srflp_db
+    build:  
+      context: ./mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=srflp

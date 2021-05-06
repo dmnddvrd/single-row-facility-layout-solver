@@ -1,0 +1,1 @@
+FROM emberstack/sftp:latest
