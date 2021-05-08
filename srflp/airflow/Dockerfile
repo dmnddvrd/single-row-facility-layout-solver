@@ -1,6 +1,5 @@
 # Base Image
 FROM python:3.7-slim
-LABEL maintainer="MarcLamberti"
 
 # Arguments that can be set with docker build
 ARG AIRFLOW_VERSION=1.10.12
@@ -32,6 +31,7 @@ RUN apt-get update -yqq && \
     gcc \
     vim \
     locales \
+    dos2unix \
     && apt-get clean
 
 COPY ./requirements-python3.7.txt /requirements-python3.7.txt
@@ -48,6 +48,9 @@ COPY ./entrypoint.sh ./entrypoint.sh
 
 # Set the entrypoint.sh file to be executable
 RUN chmod +x ./entrypoint.sh
+
+# Helps with compatiblity between OS-s, errors coming from EOL conversion of git
+RUN dos2unix ./entrypoint.sh
 
 # Set the owner of the files in AIRFLOW_HOME to the user airflow
 RUN chown -R airflow: ${AIRFLOW_HOME}
@@ -66,5 +69,3 @@ EXPOSE 8080
 
 # Execute the entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
-
-    

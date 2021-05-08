@@ -2,7 +2,6 @@ from setuptools import setup
 import setuptools
 
 packages=setuptools.find_packages()
-print(f'Packages found in srflp = {packages}')
 
 setup(
     name='srflp',

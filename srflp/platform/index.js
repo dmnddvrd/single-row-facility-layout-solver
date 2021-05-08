@@ -5,7 +5,7 @@ const express = require('express'),
   path = require('path'),
   morgan = require('morgan'),
   bodyParser = require('body-parser'),
-  usersRouter = require('./src/routes/users'),
+  usersRouter = require('./src/routes/users');
 
 
 const app = express(),
