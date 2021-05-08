@@ -16,6 +16,7 @@ setup(
             'wheel',
             'pandas',
             'numpy',
+            'pysftp',
             ],
     classifiers=[
         'Development Status :: 1 - Planning',

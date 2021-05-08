@@ -59,7 +59,7 @@ RUN chown -R airflow: ${AIRFLOW_HOME}
 USER airflow
 
 # Set workdir (it's like a cd inside the container)
-WORKDIR ${AIRFLOW_HOME}
+WORKDIR ${AIRFLOW_HOME}/srflp_solver
 
 # Create the dags folder which will contain the DAGs
 RUN mkdir dags
