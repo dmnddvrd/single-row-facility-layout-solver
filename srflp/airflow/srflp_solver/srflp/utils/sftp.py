@@ -9,8 +9,6 @@ class SftpStorage(object):
     def upload_file(self, file_name: str):
         # Define the remote path where the file will be uploaded
         remote_file_path = f"{os.environ.get('SFTP_UPLOAD_PATH')}{file_name}"
-        print(remote_file_path)
-        print(file_name)
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
 

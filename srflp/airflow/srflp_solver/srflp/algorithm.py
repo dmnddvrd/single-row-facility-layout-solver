@@ -11,6 +11,7 @@ class SrflpAlgorithm:
         'RANDOM_PERMUTATION',
         'BRUTE_FORCE'
     ]
+    DEFAULT_POPUPATION_SIZE = 10
     
     @staticmethod
     def get_distance(srflp_table: SrflpTable, i, j)->float:

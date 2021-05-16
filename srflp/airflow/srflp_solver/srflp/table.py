@@ -1,10 +1,9 @@
 import json
-import numpy as np
-import itertools
+from srflp.airflow.srflp_solver.srflp.chromosome import Chromosome
 from srflp.exception import SrflpError
-from srflp.data.generator import SrflpTableGenerator
+from srflp.chromosome import Chromosome
 
-class SrflpTable:
+class SrflpTable(Chromosome):
 
     MIN_N = 2
     MAX_N = 100
@@ -17,9 +16,8 @@ class SrflpTable:
             'C': self.C,
         })
 
-    def __init__(self, n, L, C):
-        if n < 2 or n > self.MAX_N:
-            raise SrflpError(f'Incorrect input for table provided (n={n} should be between {self.MIN_N} and {self.MAX_N})')
+    def __init__(self, n, L, C, F=None):
+     
         if not L or not C:
             raise SrflpError('Empty dataset provided')
         if len(L) != n or len(C) != n or [x for x in C if len(x) != n] != []:
@@ -32,6 +30,6 @@ class SrflpTable:
                 if i != j and C[i][j] < 0:
                     raise SrflpError(f'Inccorect cost matrix provided {self}')
         self.n = n
-        self.F = [x for x in range(n)]
+        self.F = [x for x in range(n)] if not F else F
         self.L = L
         self.C = C 
