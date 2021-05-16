@@ -1,5 +1,4 @@
 import json
-from srflp.airflow.srflp_solver.srflp.chromosome import Chromosome
 from srflp.exception import SrflpError
 from srflp.chromosome import Chromosome
 
@@ -17,7 +16,6 @@ class SrflpTable(Chromosome):
         })
 
     def __init__(self, n, L, C, F=None):
-     
         if not L or not C:
             raise SrflpError('Empty dataset provided')
         if len(L) != n or len(C) != n or [x for x in C if len(x) != n] != []:
@@ -33,3 +31,20 @@ class SrflpTable(Chromosome):
         self.F = [x for x in range(n)] if not F else F
         self.L = L
         self.C = C 
+        
+    def get_distance(self, i, j)->float:
+        sum = 0
+        if i > j:
+            i,j = j,i
+        for k in self.F[i+1:j]:
+            sum = sum + self.L[k]
+        distance = (self.L[i] + self.L[j]) / 2 + sum
+        return distance
+
+    def get_fitness(self)->float:
+        sum = 0
+        for i in range(self.n-1):
+            for j in range(i+1, self.n):
+                if i != j:
+                    sum = sum + self.C[i][j] * self.get_distance(i, j)
+        return sum 

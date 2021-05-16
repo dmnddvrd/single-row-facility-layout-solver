@@ -2,7 +2,6 @@ import json
 import numpy as np
 import itertools
 from srflp.exception import SrflpError
-from srflp.data.generator import SrflpTableGenerator
 from srflp.table import SrflpTable
 
 class SrflpAlgorithm:
@@ -12,31 +11,13 @@ class SrflpAlgorithm:
         'BRUTE_FORCE'
     ]
     DEFAULT_POPUPATION_SIZE = 10
-    
-    @staticmethod
-    def get_distance(srflp_table: SrflpTable, i, j)->float:
-        sum = 0
-        if i > j:
-            i,j = j,i
-        for k in srflp_table.F[i+1:j]:
-            sum = sum + srflp_table.L[k]
-        distance = (srflp_table.L[i] + srflp_table.L[j]) / 2 + sum
-        return distance
-
-    @staticmethod
-    def get_fitness(srflp_table: SrflpTable)->float:
-        sum = 0
-        for i in range(srflp_table.n-1):
-            for j in range(i+1, srflp_table.n):
-                if i != j:
-                    sum = sum + srflp_table.C[i][j] * SrflpAlgorithm.get_distance(srflp_table, i, j)
-        return sum 
 
     @staticmethod
     def solve(srflp_table: SrflpTable, N, algorithm = 'RANDOM_PERMUTATION'):
         algorithm = algorithm.upper()
         if algorithm not in SrflpAlgorithm.ALGORITHMS:
             raise SrflpError(f'Incorrect algorithm provided {algorithm}')
+        print(f'Using alogirthm {algorithm}')
         if algorithm == 'RANDOM_PERMUTATION':
             SrflpAlgorithm.random_permutations(srflp_table, N)
         if algorithm == 'BRUTE_FORCE':
@@ -50,7 +31,7 @@ class SrflpAlgorithm:
         best_sol = []
         best_sol_iteration_no = 0
         for i in range(MAX_ITERATIONS):
-            fitness_val = SrflpAlgorithm.get_fitness(srflp_table)
+            fitness_val = srflp_table.get_fitness()
             solution = np.random.permutation(srflp_table.n).tolist()
             srflp_table.F = solution
             if fitness_val < best_fitness_val:
@@ -68,34 +49,10 @@ class SrflpAlgorithm:
         starting_arr = srflp_table.F
         for permutation in itertools.permutations(starting_arr):
             i = i+1
-            fitness_val = SrflpAlgorithm.get_fitness(srflp_table)
+            fitness_val = srflp_table.get_fitness()
             srflp_table.F = permutation
             if fitness_val < best_fitness_val:
                 best_fitness_val = fitness_val
                 best_sol = permutation
                 best_sol_iteration_no = i
         print(f'BRUTE_FORCE: Best solution from {i} iterations took {best_sol_iteration_no} steps -> {best_sol} -> {best_fitness_val}')
-
-# def main():
-#     N = 10**6
-#     n = 6
-#     L = [20, 10, 16, 20, 10, 10]
-#     C = [
-#             [-1, 12, 3, 6, 0, 20],
-#             [12, -1, 5, 5, 5, 0],
-#             [3, 5, -1, 10, 4, 2],
-#             [6, 5, 10, -1, 2, 12],
-#             [0, 5, 4, 2, -1, 6],
-#             [20, 0, 2, 12, 6, -1]
-#         ]
-#     x = SrflpTable(n,L,C)
-#     SrflpAlgorithm.solve(x, N, 'brute_force')
-    
-def main():
-    for n in range(49,50):
-        for table in SrflpTableGenerator.generate_sample(19):
-            SrflpAlgorithm.solve(table, 100, 'brute_force')
-            SrflpAlgorithm.solve(table, 100, 'RANDOM_PERMUTATION')
-        
-if __name__ == "__main__":
-    main()
