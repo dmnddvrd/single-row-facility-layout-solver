@@ -1,4 +1,3 @@
-import json
 import numpy as np
 import itertools
 from srflp.exception import SrflpError
@@ -13,7 +12,7 @@ class SrflpAlgorithm:
     DEFAULT_POPUPATION_SIZE = 10
 
     @staticmethod
-    def solve(srflp_table: SrflpTable, N, algorithm = 'RANDOM_PERMUTATION'):
+    def solve_simple(srflp_table: SrflpTable, N, algorithm = 'RANDOM_PERMUTATION'):
         algorithm = algorithm.upper()
         if algorithm not in SrflpAlgorithm.ALGORITHMS:
             raise SrflpError(f'Incorrect algorithm provided {algorithm}')
@@ -52,7 +51,10 @@ class SrflpAlgorithm:
             fitness_val = srflp_table.get_fitness()
             srflp_table.F = permutation
             if fitness_val < best_fitness_val:
-                best_fitness_val = fitness_val
-                best_sol = permutation
-                best_sol_iteration_no = i
+                best_fitness_val, best_sol, best_sol_iteration_no = fitness_val, permutation, i
         print(f'BRUTE_FORCE: Best solution from {i} iterations took {best_sol_iteration_no} steps -> {best_sol} -> {best_fitness_val}')
+
+
+    @staticmethod
+    def genetic_algorithm(srflp_table: SrflpTable,popupation_size=10,selection_type=None, crossover_type=None, mutation_type=None):
+        pass

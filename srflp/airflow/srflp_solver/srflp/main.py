@@ -15,13 +15,13 @@ def main():
             [20, 0, 2, 12, 6, -1]
         ]
     x = SrflpTable(n,L,C)
-    SrflpAlgorithm.solve(x, N, 'brute_force')
+    SrflpAlgorithm.solve_simple(x, N, 'brute_force')
     
 # def main():
 #     for n in range(49,50):
 #         for table in SrflpTableGenerator.generate_sample(19):
-#             SrflpAlgorithm.solve(table, 100, 'brute_force')
-#             SrflpAlgorithm.solve(table, 100, 'RANDOM_PERMUTATION')
+#             SrflpAlgorithm.solve_simple(table, 100, 'brute_force')
+#             SrflpAlgorithm.solve_simple(table, 100, 'RANDOM_PERMUTATION')
         
 if __name__ == "__main__":
     main()
