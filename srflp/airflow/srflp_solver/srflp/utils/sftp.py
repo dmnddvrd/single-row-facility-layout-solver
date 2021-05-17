@@ -3,9 +3,7 @@ import os
 
 
 class SftpStorage(object):
-    def __init__(self, logging: Logging):
-        self._logging = logging
-
+    
     def upload_file(self, file_name: str):
         # Define the remote path where the file will be uploaded
         remote_file_path = f"{os.environ.get('SFTP_UPLOAD_PATH')}{file_name}"

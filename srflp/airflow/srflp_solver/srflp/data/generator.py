@@ -2,7 +2,7 @@ from random import sample
 import numpy as np
 from srflp.exception import SrflpError
 
-class SrflpTableGenerator:
+class SrflpChromosomeGenerator:
  
     MIN_COST = 5
     MAX_COST = 50
@@ -11,7 +11,7 @@ class SrflpTableGenerator:
 
     @classmethod
     def generate_sample(cls, n = 6, sample_size=10**4):
-        from srflp.algorithm import SrflpTable
+        from srflp.algorithm import SrflpChromosome
         if n<3 or sample_size < 1 or n > cls.MAX_LENGTH-cls.MIN_LENGTH:
             raise SrflpError(f'Incorrect input provided n should be between {cls.MIN_LENGTH} and {cls.MAX_LENGTH}')
         for i in range(sample_size):
@@ -22,5 +22,5 @@ class SrflpTableGenerator:
                 C[i][i] = -1
             print(C)
             C = C.tolist()
-            yield SrflpTable(n, L, C)
+            yield SrflpChromosome(n, L, C)
 
