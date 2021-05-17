@@ -1,26 +1,25 @@
 import pysftp
-import os
-
 
 class SftpStorage(object):
-    
-    def upload_file(self, file_name: str):
+
+    def __init__(self, host, username, private_key='id_rsa'):
         # Define the remote path where the file will be uploaded
-        remote_file_path = f"{os.environ.get('SFTP_UPLOAD_PATH')}{file_name}"
-        cnopts = pysftp.CnOpts()
-        cnopts.hostkeys = None
+        self.cnopts = pysftp.CnOpts()
+        # This is set to none for easier usage, with a live server we would need to enable handshake
+        self.cnopts.hostkeys, self.host, self.username, self.private_key = None, host, username, private_key
 
+
+    def upload_file(self, local_file, destionation_path: str):
         with pysftp.Connection(
-                host=os.environ.get('SFTP_HOSTNAME'),
-                username=os.environ.get('SFTP_USERNAME'),
-                private_key='id_rsa',
-                cnopts=cnopts
+                host=self.host,
+                username=self.username,
+                private_key=self.private_key,
+                cnopts=self.cnopts
         ) as sftp:
-            local_file_path = f"{os.environ.get('TMP_PATH')}{file_name}"
-            self._logging.log(f'Uploading output file: {local_file_path} to remote location: {remote_file_path}')
-
+            local_file_path = local_file
+            print(f'Uploading output file: {local_file_path} to remote location: {destionation_path}')
             sftp.put(
                 localpath=local_file_path,
-                remotepath=remote_file_path,
+                remotepath=destionation_path,
                 confirm=False
             )
