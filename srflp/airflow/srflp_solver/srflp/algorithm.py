@@ -2,6 +2,8 @@ import numpy as np
 import itertools
 from srflp.exception import SrflpError
 from srflp.table import SrflpTable
+from srflp.utils.timer import stopwatch
+import sys
 
 class SrflpAlgorithm:
 
@@ -25,8 +27,9 @@ class SrflpAlgorithm:
 
 #   Best solution from 1000000 iterations took 51 steps -> [3, 4, 1, 0, 5, 2] -> 2846.0
     @staticmethod
+    @stopwatch
     def random_permutations(srflp_table: SrflpTable, MAX_ITERATIONS = 10**5):
-        best_fitness_val = 99999
+        best_fitness_val = float('inf')
         best_sol = []
         best_sol_iteration_no = 0
         for i in range(MAX_ITERATIONS):
@@ -34,14 +37,13 @@ class SrflpAlgorithm:
             solution = np.random.permutation(srflp_table.n).tolist()
             srflp_table.F = solution
             if fitness_val < best_fitness_val:
-                best_fitness_val = fitness_val
-                best_sol = solution
-                best_sol_iteration_no = i
+                best_fitness_val, best_sol, best_sol_iteration_no = fitness_val, solution, i
         print(f'RANDOM PERM: Best solution from {MAX_ITERATIONS} iterations took {best_sol_iteration_no} steps -> {best_sol} -> {best_fitness_val}')
 
     @staticmethod
+    @stopwatch
     def brute_force(srflp_table: SrflpTable, MAX_ITERATIONS = 10**5):
-        best_fitness_val = 99999
+        best_fitness_val = float('inf')
         best_sol = []
         best_sol_iteration_no = 0
         i = 0
@@ -52,6 +54,8 @@ class SrflpAlgorithm:
             srflp_table.F = permutation
             if fitness_val < best_fitness_val:
                 best_fitness_val, best_sol, best_sol_iteration_no = fitness_val, permutation, i
+            if i == MAX_ITERATIONS:
+                break
         print(f'BRUTE_FORCE: Best solution from {i} iterations took {best_sol_iteration_no} steps -> {best_sol} -> {best_fitness_val}')
 
 
