@@ -2,11 +2,12 @@ import pysftp
 
 class SftpStorage(object):
 
-    def __init__(self, host, username, private_key='id_rsa'):
+    def __init__(self, host, username):
         # Define the remote path where the file will be uploaded
         self.cnopts = pysftp.CnOpts()
         # This is set to none for easier usage, with a live server we would need to enable handshake
         self.cnopts.hostkeys, self.host, self.username, self.private_key = None, host, username, private_key
+
 
 
     def upload_file(self, local_file, destionation_path: str):
