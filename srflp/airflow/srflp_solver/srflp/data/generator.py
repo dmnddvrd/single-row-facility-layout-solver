@@ -1,13 +1,14 @@
 from random import sample
 import numpy as np
 from srflp.exception import SrflpError
+import srflp.utils.config as config
 
 class SrflpChromosomeGenerator:
  
-    MIN_COST = 5
-    MAX_COST = 50
-    MIN_LENGTH = 10
-    MAX_LENGTH = 50
+    MIN_COST = config.get('min_cost')
+    MAX_COST = config.get('max_cost')
+    MIN_LENGTH = config.get('min_length')
+    MAX_LENGTH = config.get('max_length')
 
     @classmethod
     def generate_sample(cls, n = 6, sample_size=10**4):
@@ -20,7 +21,6 @@ class SrflpChromosomeGenerator:
             C = (C + C.T)/2
             for i in range(n):
                 C[i][i] = -1
-            print(C)
             C = C.tolist()
             yield SrflpChromosome(n, L, C)
 

@@ -1,47 +1,23 @@
 import json
 from srflp.exception import SrflpError
+import srflp.utils.config as config
+from srflp.data.generator import SrflpChromosomeGenerator as srflp_gen
+import numpy as np
+import random 
+
 # Permutational representation of a Chromosome
 # Ex: For n = 4 can be [0,1,2,3], [0,3,2,1], etc.
 class Chromosome:
 
-    MIN_N = 2
-    MAX_N = 100
+    MIN_N = config.get('min_n_chromosome')
+    MAX_N = config.get('max_n_chromosome')
 
     def __init__(self, n, F = None):
         if n < 2 or n > self.MAX_N:
             raise SrflpError(f'Incorrect input provided for chromosome (n={n} should be between {self.MIN_N} and {self.MAX_N})')
         self.F = [x for x in range(n)] if not F else F
 
-    def mutate(self, algorithm):
-        print(f'Mutating chromosome {self.f} using {algorithm}')
-
-    def crossover(self, other: "Chromosome"):
-        print(f'Creating crossover from {self.F} and {other.F}')
-
-class Population():
-    DEFAULT_POP_SIZE = 10
-
-    def __init__(self, population):
-        if not population or not all(isinstance(x, Chromosome) for x in population):
-            raise SrflpError(f'All members of a population must be Chromosomes')
-        self.population = population
-        self.n = len(population)
-
-    def genetic_operation(operation_type):
-        def wrap(function):
-            def wrapped_f(*args, **kwargs):
-                print(f'Applied {operation_type} operation ({function.__name__}) to population')
-                return function(*args,**kwargs)
-            return wrapped_f
-        return wrap
-
-    def selection():
-        pass
-
 class SrflpChromosome(Chromosome):
-
-    MIN_N = 2
-    MAX_N = 100
 
     def __init__(self, n, L, C, F=None):
         if not L or not C:
@@ -89,3 +65,58 @@ class SrflpChromosome(Chromosome):
             'L': self.L,
             'C': self.C,
         })
+
+class Population():
+    DEFAULT_POP_SIZE = config.get('default_pop_size')
+
+    def __init__(self, population):
+        if not all(isinstance(x, Chromosome) for x in population):
+            raise SrflpError(f'All members of a population must be Chromosomes')
+        self.population = population
+        self.n = len(population)
+    
+    # Adds a chromosome to the population
+    def add(self, chr: Chromosome):
+        self.population.append(chr)
+
+    # Removes chromosome from given index
+    def remove(self, index):
+        n = len(self.population)
+        if index < n:
+            raise SrflpError(f'Invalid index({index}) in array of length {n}')
+        del self.population[index]
+
+    # A decorator to log/print whenever a genetic operation is performed
+    def genetic_operation(operation_type):
+        def wrap(function):
+            def wrapped_f(*args, **kwargs):
+                print(f'Applied {operation_type} operation ({function.__name__}) to population')
+                return function(*args,**kwargs)
+            return wrapped_f
+        return wrap
+
+    # Random variable x      Index in the Cumulative Array      Value in Original Array
+    # -----------------      -----------------------------      ----------------------
+    #  0 <= x < 10                      0                            10
+    # 10 <= x < 70                      1                            60
+    # 70 <= x < 75                      2                             5
+    # 75 <= x < 100                     3                            25 
+    # x is 72, bisecting the cumulative array gives a position index of 2 which corresponds to 5 in the original array
+    def bisection(self, arr, val):
+        for i in range(len(arr)):
+            if val<arr[i]:
+                return i
+                
+    # The probability of choosing an individual for breeding of the next generation is proportional to its fitness, 
+    # the better the fitness is, the higher chance for that individual to be chosen
+    @genetic_operation('selection')
+    def selection_roulette_wheel(self, selection_size):
+        n = len(self.population)
+        if selection_size > n:
+            raise SrflpError(f'Cannot create bigger sample({selection_size}) than the original population ({n})')
+        cummulative_fitness = np.cumsum([chromosome.get_fitness() for chromosome in self.population]) 
+               
+        return self.bisection(cummulative_fitness, random.random()*cummulative_fitness[-1])
+
+    
+
