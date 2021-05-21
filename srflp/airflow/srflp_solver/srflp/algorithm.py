@@ -11,8 +11,6 @@ class SrflpAlgorithm:
         'RANDOM_PERMUTATION',
         'BRUTE_FORCE'
     ]
-    DEFAULT_POPUPATION_SIZE = 10
-
     @staticmethod
     def solve_simple(srflp_chromosome: SrflpChromosome, N, algorithm = 'RANDOM_PERMUTATION'):
         algorithm = algorithm.upper()

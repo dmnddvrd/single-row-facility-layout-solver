@@ -18,6 +18,26 @@ class Chromosome:
     def crossover(self, other: "Chromosome"):
         print(f'Creating crossover from {self.F} and {other.F}')
 
+class Population():
+    DEFAULT_POP_SIZE = 10
+
+    def __init__(self, population):
+        if not population or not all(isinstance(x, Chromosome) for x in population):
+            raise SrflpError(f'All members of a population must be Chromosomes')
+        self.population = population
+        self.n = len(population)
+
+    def genetic_operation(operation_type):
+        def wrap(function):
+            def wrapped_f(*args, **kwargs):
+                print(f'Applied {operation_type} operation ({function.__name__}) to population')
+                return function(*args,**kwargs)
+            return wrapped_f
+        return wrap
+
+    def selection():
+        pass
+
 class SrflpChromosome(Chromosome):
 
     MIN_N = 2

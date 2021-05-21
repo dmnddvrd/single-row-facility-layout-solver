@@ -55,14 +55,16 @@ RUN dos2unix ./entrypoint.sh
 # Set the owner of the files in AIRFLOW_HOME to the user airflow
 RUN chown -R airflow: ${AIRFLOW_HOME}
 
+# Create the dags folder which will contain the DAGs
+RUN mkdir dags
+RUN chmod 755 dags
 # Set the username to use
 USER airflow
 
 # Set workdir (it's like a cd inside the container)
 WORKDIR ${AIRFLOW_HOME}/srflp-solver
 
-# Create the dags folder which will contain the DAGs
-RUN mkdir dags
+
 
 # Expose ports (just to indicate that this container needs to map port)
 EXPOSE 8080
