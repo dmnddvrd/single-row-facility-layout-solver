@@ -17,6 +17,7 @@ setup(
             'pandas',
             'numpy',
             'pysftp',
+            'python-dotenv'
             ],
     classifiers=[
         'Development Status :: 1 - Planning',

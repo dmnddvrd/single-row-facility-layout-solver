@@ -1,22 +1,15 @@
 version: "3.5"
 
 services:
+  
   sftp:
     ports:
       - '22:22'
     container_name: sftp
     build: ./sftp-storage
     volumes:
-      - ./sftp-storage/contents:/home/demo/sftp/
-    
-  # srflp_platform:
-  #   ports:
-  #     - '8000:8080'
-  #   container_name: srflp_platform
-  #   build: ./platform
-  #   volumes:
-  #     - ./platform:/srflp-platform
-
+      - ./sftp-storage/contents:/home/srflp/sftp/
+      
   airflow:
     build: ./airflow
     restart: always
@@ -41,3 +34,11 @@ services:
   #   environment:
   #     - MYSQL_ROOT_PASSWORD=root
   #     - MYSQL_DATABASE=srflp
+
+  # srflp_platform:
+  #   ports:
+  #     - '8000:8080'
+  #   container_name: srflp_platform
+  #   build: ./platform
+  #   volumes:
+  #     - ./platform:/srflp-platform
