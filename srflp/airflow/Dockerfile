@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.7-slim
+FROM python:3.8-slim
 
 # Arguments that can be set with docker build
 ARG AIRFLOW_VERSION=1.10.12
@@ -34,14 +34,14 @@ RUN apt-get update -yqq && \
     dos2unix \
     && apt-get clean
 
-COPY ./requirements-python3.7.txt /requirements-python3.7.txt
+COPY ./requirements-python3.8.txt /requirements-python3.8.txt
 
 # Upgrade pip
 # Create airflow user 
 # Install apache airflow with subpackages
 RUN pip install --upgrade pip && \
     useradd -ms /bin/bash -d ${AIRFLOW_HOME} airflow && \
-    pip install apache-airflow[crypto,celery,postgres,kubernetes,docker]==${AIRFLOW_VERSION} --constraint /requirements-python3.7.txt
+    pip install apache-airflow[crypto,celery,postgres,kubernetes,docker]==${AIRFLOW_VERSION} --constraint /requirements-python3.8.txt
 
 # Copy the entrypoint.sh from host to container (at path AIRFLOW_HOME)
 COPY ./entrypoint.sh ./entrypoint.sh

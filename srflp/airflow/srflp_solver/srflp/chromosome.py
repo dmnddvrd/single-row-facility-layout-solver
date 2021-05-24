@@ -8,7 +8,6 @@ import random
 # Permutational representation of a Chromosome
 # Ex: For n = 4 can be [0,1,2,3], [0,3,2,1], etc.
 class Chromosome:
-
     MIN_N = config.get('min_n_chromosome')
     MAX_N = config.get('max_n_chromosome')
 
