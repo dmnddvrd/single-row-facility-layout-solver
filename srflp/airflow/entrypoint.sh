@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-
-# pip install -e custom library
 cd /usr/local/airflow/srflp-solver
 echo 'Removing cached files'
 find . -name "*.pyc" -type f -delete

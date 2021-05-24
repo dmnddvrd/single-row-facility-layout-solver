@@ -22,7 +22,6 @@ class SrflpAlgorithm:
         if algorithm == 'BRUTE_FORCE':
             SrflpAlgorithm.brute_force(srflp_chromosome, N)
 
-
 #   Best solution from 1000000 iterations took 51 steps -> [3, 4, 1, 0, 5, 2] -> 2846.0
     @staticmethod
     @stopwatch
@@ -31,7 +30,7 @@ class SrflpAlgorithm:
         best_sol = []
         best_sol_iteration_no = 0
         for i in range(MAX_ITERATIONS):
-            fitness_val = srflp_chromosome.get_fitness()
+            fitness_val = srflp_chromosome.fitness
             solution = np.random.permutation(srflp_chromosome.n).tolist()
             srflp_chromosome.F = solution
             if fitness_val < best_fitness_val:
@@ -48,7 +47,7 @@ class SrflpAlgorithm:
         starting_arr = srflp_chromosome.F
         for permutation in itertools.permutations(starting_arr):
             i = i+1
-            fitness_val = srflp_chromosome.get_fitness()
+            fitness_val = srflp_chromosome.fitness
             srflp_chromosome.F = permutation
             if fitness_val < best_fitness_val:
                 best_fitness_val, best_sol, best_sol_iteration_no = fitness_val, permutation, i

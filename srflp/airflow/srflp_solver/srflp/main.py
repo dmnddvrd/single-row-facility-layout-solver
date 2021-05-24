@@ -15,9 +15,9 @@ def main():
             [20, 0, 2, 12, 6, -1]
         ]
     x = SrflpChromosome(n,L,C)
-    # SrflpAlgorithm.solve_simple(x, N, 'brute_force')
     pop = Population([x,x,x,x])
-    pop.selection_roulette_wheel()
+    SrflpAlgorithm.solve_simple(x, 10000, 'brute_force')
+    SrflpAlgorithm.solve_simple(x, 10000, 'RANDOM_PERMUTATION')
 # def main():
 #     for n in range(49,50):
 #         for chromosome in SrflpChromosomeGenerator.generate_sample(19):
@@ -26,3 +26,23 @@ def main():
         
 if __name__ == "__main__":
     main()
+
+
+# BRUTE_FORCE: Best solution from 720 iterations took 29 steps -> (0, 2, 1, 5, 3, 4) -> 2846.0
+# Function brute_force execution time: 0.011421442031860352
+# Using alogirthm RANDOM_PERMUTATION
+# RANDOM PERM: Best solution from 10000 iterations took 28 steps -> [1, 4, 3, 5, 0, 2] -> 2846.0
+# Function random_permutations execution time: 0.17294716835021973
+# airflow@3b6e6e3ea7c9:~/srflp-solver/srflp$ python main.py
+# Using alogirthm BRUTE_FORCE
+# BRUTE_FORCE: Best solution from 720 iterations took 29 steps -> (0, 2, 1, 5, 3, 4) -> 2846.0
+# Function brute_force execution time: 0.010756254196166992
+# Using alogirthm RANDOM_PERMUTATION
+# RANDOM PERM: Best solution from 10000 iterations took 36 steps -> [0, 4, 1, 3, 2, 5] -> 2846.0
+# Function random_permutations execution time: 0.1765117645263672
+# airflow@3b6e6e3ea7c9:~/srflp-solver/srflp$ python main.py
+# Using alogirthm BRUTE_FORCE
+# BRUTE_FORCE: Best solution from 720 iterations took 29 steps -> (0, 2, 1, 5, 3, 4) -> 2846.0
+# Function brute_force execution time: 0.010523557662963867
+# Using alogirthm RANDOM_PERMUTATION
+# RANDOM PERM: Best solution from 10000 iterations took 35 steps -> [3, 4, 1, 2, 0, 5] -> 2846.0

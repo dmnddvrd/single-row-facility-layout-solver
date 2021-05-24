@@ -8,17 +8,18 @@ import random
 # Permutational representation of a Chromosome
 # Ex: For n = 4 can be [0,1,2,3], [0,3,2,1], etc.
 class Chromosome:
-    MIN_N = config.get('min_n_chromosome')
-    MAX_N = config.get('max_n_chromosome')
+    MIN_N = int(config.get('min_n_chromosome'))
+    MAX_N = int(config.get('max_n_chromosome'))
 
     def __init__(self, n, F = None):
-        if n < 2 or n > self.MAX_N:
+        if n < self.MIN_N or n > self.MAX_N:
             raise SrflpError(f'Incorrect input provided for chromosome (n={n} should be between {self.MIN_N} and {self.MAX_N})')
-        self.F = [x for x in range(n)] if not F else F
-
+        self._F = [x for x in range(n)] if not F else F
+        
 class SrflpChromosome(Chromosome):
 
     def __init__(self, n, L, C, F=None):
+        super().__init__(n)
         if not L or not C:
             raise SrflpError('Empty dataset provided')
         if len(L) != n or len(C) != n or [x for x in C if len(x) != n] != []:
@@ -31,19 +32,31 @@ class SrflpChromosome(Chromosome):
                 if i != j and C[i][j] < 0:
                     raise SrflpError(f'Inccorect cost matrix provided {self}')
         self.n = n
-        self.F = [x for x in range(n)] if not F else F
+        self.__F = [x for x in range(n)] if not F else F
         self.L = L
         self.C = C 
+        self.fitness = self.get_fitness()
+
+    @property
+    def F(self):
+        return self.__F
+    
+    @F.setter
+    def F(self, F):
+        if len(F) != len(self.__F):
+            raise SrflpError(f'New F value should be same length as original')
+        self.__F = F
+        self.fitness = self.get_fitness() 
 
     # Returns distance between `i`th and `j`th facilities
     def get_distance(self, i, j)->float:
-        sum = 0
         if i == j:
-            return sum
+            return 0
         if i > j:
             i,j = j,i
-        for k in self.F[i+1:j]:
-            sum = sum + self.L[k]
+        sum = 0
+        for k in self.__F[i+1:j]:
+            sum += self.L[k]
         distance = (self.L[i] + self.L[j]) / 2 + sum
         return distance
 
@@ -53,14 +66,13 @@ class SrflpChromosome(Chromosome):
         for i in range(self.n-1):
             for j in range(i+1, self.n):
                 if i != j:
-                    sum = sum + self.C[i][j] * self.get_distance(i, j)
-        return sum 
-
+                    sum += self.C[i][j] * self.get_distance(i, j)
+        return sum
         
     def __str__(self):
         return json.dumps({
             'n': self.n,
-            'F': self.F,
+            'F': self.__F,
             'L': self.L,
             'C': self.C,
         })
@@ -68,10 +80,10 @@ class SrflpChromosome(Chromosome):
 class Population():
     DEFAULT_POP_SIZE = config.get('default_pop_size')
 
-    def __init__(self, population):
+    def __init__(self, population=None):
         if not all(isinstance(x, Chromosome) for x in population):
             raise SrflpError(f'All members of a population must be Chromosomes')
-        self.population = population
+        self.population = population if population else []
         self.n = len(population)
     
     # Adds a chromosome to the population
@@ -87,12 +99,12 @@ class Population():
 
     # A decorator to log/print whenever a genetic operation is performed
     def genetic_operation(operation_type):
-        def wrap(function):
+        def wraper(function):
             def wrapped_f(*args, **kwargs):
                 print(f'Applied {operation_type} operation ({function.__name__}) to population')
                 return function(*args,**kwargs)
             return wrapped_f
-        return wrap
+        return wraper
 
     # Random variable x      Index in the Cumulative Array      Value in Original Array
     # -----------------      -----------------------------      ----------------------
@@ -113,9 +125,11 @@ class Population():
         n = len(self.population)
         if selection_size > n:
             raise SrflpError(f'Cannot create bigger sample({selection_size}) than the original population ({n})')
-        cummulative_fitness = np.cumsum([chromosome.get_fitness() for chromosome in self.population]) 
-               
-        return self.bisection(cummulative_fitness, random.random()*cummulative_fitness[-1])
+        cummulative_fitness = np.cumsum([chromosome.get_fitness() for chromosome in self.population])
+        selection = Population()
+        for i in range(selection_size):
+            selection.add(self.population[self.bisection(cummulative_fitness, random.random()*cummulative_fitness[-1])])
+        return selection
 
-    
-
+    def __str__(self):
+        return '\n'.join([str(x) for x in self.population])
