@@ -60,6 +60,53 @@ class SrflpChromosome(Chromosome):
         distance = (self.L[i] + self.L[j]) / 2 + sum
         return distance
 
+    # Swaps 2 facilities at random of the given chromosome nr_of_swaps times
+    # [0, 1, 3, 5, 4, 2], we pick [2, 5] as a,b and thus the array becomes [0, 1, 2, 5, 4, 3]
+    def swap_mutation(self, nr_of_swaps=1):
+        for _i in range(nr_of_swaps):
+            a,b = random.randint(0, self.n-1),random.randint(0, self.n-1)
+            while b==a:
+                b = random.randint(0, self.n-1)
+            self.F[a], self.F[b] = self.F[b], self.F[a]
+            self.fitness = self.get_fitness()
+
+    # Picks two indices in a chromosome a,b <n ; a<b
+    # Shifts the element from index b to be the next to a and the rest of the elements remain the same  
+    # [0, 1, 3, 5, 4, 2], we pick [2, 5] as a,b and thus the array becomes [0, 1, 3, 2, 5, 4]
+    def insert_mutation(self):
+        a,b = random.randint(0, self.n-1),random.randint(0, self.n-1)
+        while b==a:
+            b = random.randint(0, self.n-1)
+        if a>b:
+            a,b =b,a
+        self.F.insert(a+1, self.F[b])
+        del self.F[b+1]
+        self.fitness = self.get_fitness()
+
+    # Picks a subset from an array and rearranges it randomly
+    def scramble_mutation(self):
+        a,b = random.randint(0, self.n-1),random.randint(0, self.n-1)
+        while abs(b-a)<2:
+            b = random.randint(0, self.n-1)
+        if a>b:
+            a,b =b,a
+        temp = self.F[a:b]
+        random.shuffle(temp)
+        self.F[a:b] = temp
+        self.fitness = self.get_fitness()
+
+    # Picks a subset from an array and rearranges it randomly
+    def reverse_mutation(self):
+        a,b = random.randint(0, self.n-1),random.randint(0, self.n-1)
+        while abs(b-a)<2:
+            b = random.randint(0, self.n-1)
+        if a>b:
+            a,b =b,a
+        temp = self.F[a:b]
+        temp.reverse()
+        self.F[a:b] = temp
+        self.fitness = self.get_fitness()
+
     # Calculates fitness of the given chromosome
     def get_fitness(self)->float:
         sum = 0
@@ -147,6 +194,100 @@ class Population():
             raise SrflpError(f'Cannot create bigger sample({selection_size}) than the original population ({n})')
         return Population(random.choices(self.population, k=selection_size))
 
+    # Mutate all elements specified in ch_indices array
+    @genetic_operation('mutation')
+    def swap_mutation(self, ch_indices, nr_of_swaps=1):
+        n = len(self.population)
+        if not ch_indices or not all( i < n for i in ch_indices):
+            raise SrflpError(f'Indices of genes are empty or exceed upper limit {ch_indices}')
+        # Doesn't matter which chromosome's N we extract since in a population all of them should be of the same dimension
+        for i in ch_indices:
+            self.population[i].swap_mutation(nr_of_swaps)
+
+    @genetic_operation('mutation')
+    def insert_mutation(self, ch_indices):
+        n = len(self.population)
+        if not ch_indices or not all( i < n for i in ch_indices):
+            raise SrflpError(f'Indices of genes are empty or exceed upper limit {ch_indices}')
+        # Doesn't matter which chromosome's N we extract since in a population all of them should be of the same dimension
+        for i in ch_indices:
+            self.population[i].insert_mutation()
+
+    @genetic_operation('mutation')
+    def scramble_mutation(self, ch_indices):
+        n = len(self.population)
+        if not ch_indices or not all( i < n for i in ch_indices):
+            raise SrflpError(f'Indices of genes are empty or exceed upper limit {ch_indices}')
+        # Doesn't matter which chromosome's N we extract since in a population all of them should be of the same dimension
+        for i in ch_indices:
+            self.population[i].scramble_mutation()
+
+    @genetic_operation('mutation')
+    def reverse_mutation(self, ch_indices):
+        n = len(self.population)
+        if not ch_indices or not all( i < n for i in ch_indices):
+            raise SrflpError(f'Indices of genes are empty or exceed upper limit {ch_indices}')
+        # Doesn't matter which chromosome's N we extract since in a population all of them should be of the same dimension
+        for i in ch_indices:
+            self.population[i].reverse_mutation()
+ 
+    def pmx(self,chr_a: Chromosome,chr_b: Chromosome, start:int, stop:int):
+        a,b = chr_a.F[:], chr_b.F[:]
+        child = [None]*chr_a.n
+        # Copy a slice from first parent:
+        child[start:stop] = a[start:stop]
+        # Map the same slice in parent b to child using indices from parent a:
+        for ind,x in enumerate(b[start:stop]):
+            ind += start
+            if x not in child:
+                while child[ind] != None:
+                    ind = b.index(a[ind])
+                child[ind] = x
+            # Copy over the rest from parent b
+        for ind,x in enumerate(child):
+            if x == None:
+                child[ind] = b[ind]
+        return child
+
+
+    def ox(self, chr_a: Chromosome, chr_b:Chromosome, start:int, stop:int):
+        a,b = chr_a.F[:], chr_b.F[:]
+        child = [None]*chr_a.n
+        child[start:stop] = a[start:stop]
+        b_ind, c_ind  = stop, stop
+        l = chr_a.n
+        while None in child:
+            if b[b_ind % l] not in child:
+                child[c_ind % l] = b[b_ind % l]
+                c_ind += 1
+            b_ind += 1
+        return child
+
+    @genetic_operation('crossover')
+    def partially_mapped_crossover(self, ch_indices):
+        if len(ch_indices) != 2 or not all( i < n for i in ch_indices):
+           raise SrflpError(f'Indices of genes are empty or exceed upper limit {ch_indices}')
+        chr_a,chr_b = self.population[ch_indices[0]],self.population[ch_indices[1]]
+        half = len(chr_a.F) // 2
+        a = random.randint(0, len(chr_a.F)-half)
+        b = a + half
+        print(a,b)
+        print(chr_a.F, chr_b.F)
+        return self.pmx(chr_a,chr_b,a,b),self.pmx(chr_b,chr_a,a,b)
+
+    @genetic_operation('crossover')
+    def order_crossover(self, ch_indices):
+        if len(ch_indices) != 2 or not all( i < n for i in ch_indices):
+           raise SrflpError(f'Indices of genes are empty or exceed upper limit {ch_indices}')
+        chr_a,chr_b = self.population[ch_indices[0]],self.population[ch_indices[1]]
+        half = len(chr_a.F) // 2
+        a = random.randint(0, len(chr_a.F)-half)
+        b = a + half
+        print(a,b)
+        print(chr_a.F, chr_b.F)
+        return self.ox(chr_a,chr_b,a,b),self.pmx(chr_b,chr_a,a,b)
+
+
     def __str__(self):
         return '\n'.join([str(x) for x in self.population])
 
@@ -162,7 +303,12 @@ if __name__ == "__main__":
             [0, 5, 4, 2, -1, 6],
             [20, 0, 2, 12, 6, -1]
         ]
-    x = SrflpChromosome(n,L,C)
-    pop = Population([x,x,x,x])
-    print(pop.selection_rank(2))
-    print(pop.selection_rand(2))
+    pop = Population([SrflpChromosome(n,L,C), SrflpChromosome(n,L,C), SrflpChromosome(n,L,C), SrflpChromosome(n,L,C)])
+    # print(pop.selection_rank(2))
+    # print(pop.selection_rand(2))
+    pop.swap_mutation([0,1],2)
+    # pop.insert_mutation([0,1])
+    # pop.scramble_mutation([0,1])
+    # pop.reverse_mutation([0,1])
+    # print(pop.partially_mapped_crossover([0,1]))
+    print(pop.order_crossover([0,1]))
