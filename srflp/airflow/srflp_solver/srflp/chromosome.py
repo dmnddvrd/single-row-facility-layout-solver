@@ -81,10 +81,10 @@ class Population():
     DEFAULT_POP_SIZE = config.get('default_pop_size')
 
     def __init__(self, population=None):
-        if not all(isinstance(x, Chromosome) for x in population):
+        if population and not all(isinstance(x, Chromosome) for x in population):
             raise SrflpError(f'All members of a population must be Chromosomes')
         self.population = population if population else []
-        self.n = len(population)
+        self.n = len(population) if population else 0
     
     # Adds a chromosome to the population
     def add(self, chr: Chromosome):
@@ -125,11 +125,44 @@ class Population():
         n = len(self.population)
         if selection_size > n:
             raise SrflpError(f'Cannot create bigger sample({selection_size}) than the original population ({n})')
-        cummulative_fitness = np.cumsum([chromosome.get_fitness() for chromosome in self.population])
-        selection = Population()
-        for i in range(selection_size):
-            selection.add(self.population[self.bisection(cummulative_fitness, random.random()*cummulative_fitness[-1])])
-        return selection
+        return Population(random.choices(self.population, weights=[x.fitness for x in self.population], k=selection_size))
+    
+    # Rank selection finds the N best chromosomes of a given population based on fitness
+    @genetic_operation('selection')
+    def selection_rank(self, selection_size):
+        n = len(self.population)
+        if selection_size > n:
+            raise SrflpError(f'Cannot create bigger sample({selection_size}) than the original population ({n})')
+        indices = np.argsort([x.fitness for x in self.population])[-selection_size:].tolist() 
+        pop = []
+        for i in indices:
+            pop.append(self.population[i])
+        return Population(pop)
+
+    # Completely random selection
+    @genetic_operation('selection')
+    def selection_rand(self, selection_size):
+        n = len(self.population)
+        if selection_size > n:
+            raise SrflpError(f'Cannot create bigger sample({selection_size}) than the original population ({n})')
+        return Population(random.choices(self.population, k=selection_size))
 
     def __str__(self):
         return '\n'.join([str(x) for x in self.population])
+
+if __name__ == "__main__":
+    N = 10**6
+    n = 6
+    L = [20, 10, 16, 20, 10, 10]
+    C = [
+            [-1, 12, 3, 6, 0, 20],
+            [12, -1, 5, 5, 5, 0],
+            [3, 5, -1, 10, 4, 2],
+            [6, 5, 10, -1, 2, 12],
+            [0, 5, 4, 2, -1, 6],
+            [20, 0, 2, 12, 6, -1]
+        ]
+    x = SrflpChromosome(n,L,C)
+    pop = Population([x,x,x,x])
+    print(pop.selection_rank(2))
+    print(pop.selection_rand(2))
