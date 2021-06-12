@@ -14,19 +14,26 @@ def main():
             [0, 5, 4, 2, -1, 6],
             [20, 0, 2, 12, 6, -1]
         ]
-    x = SrflpChromosome(n,L,C)
-    pop = Population([x,x,x,x])
-    SrflpAlgorithm.solve_simple(x, 10000, 'brute_force')
-    SrflpAlgorithm.solve_simple(x, 10000, 'RANDOM_PERMUTATION')
-# def main():
-#     for n in range(49,50):
-#         for chromosome in SrflpChromosomeGenerator.generate_sample(19):
-#             SrflpAlgorithm.solve_simple(chromosome, 100, 'brute_force')
-#             SrflpAlgorithm.solve_simple(chromosome, 100, 'RANDOM_PERMUTATION')
+    # x = SrflpChromosome(n,L,C)
+    # pop = Population([x,x,x,x])
+    # SrflpAlgorithm.solve_simple(x, 10000, 'brute_force')
+    # SrflpAlgorithm.solve_simple(x, 10000, 'RANDOM_PERMUTATION')
+def main():
+    for n in range(5,50):
+        for chromosome in SrflpChromosomeGenerator.generate_sample(n):
+            SrflpAlgorithm.solve_simple(chromosome, 100, 'brute_force')
+            SrflpAlgorithm.solve_simple(chromosome, 100, 'RANDOM_PERMUTATION')
         
 if __name__ == "__main__":
     main()
 
+
+def generate_test_data():
+        for n in range(5,50):
+            chromosomes = []
+            for chromosome in SrflpChromosomeGenerator.generate_sample(n, ):
+                SrflpAlgorithm.solve_simple(chromosome, 100, 'brute_force')
+                chromosomes.append(chromosome)
 
 # BRUTE_FORCE: Best solution from 720 iterations took 29 steps -> (0, 2, 1, 5, 3, 4) -> 2846.0
 # Function brute_force execution time: 0.011421442031860352

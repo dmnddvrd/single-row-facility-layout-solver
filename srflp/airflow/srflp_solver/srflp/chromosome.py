@@ -231,6 +231,20 @@ class Population():
         for i in ch_indices:
             self.population[i].reverse_mutation()
  
+
+    def ox(self, chr_a: Chromosome, chr_b:Chromosome, start:int, stop:int):
+        a,b = chr_a.F[:], chr_b.F[:]
+        child = [None]*chr_a.n
+        child[start:stop] = a[start:stop]
+        b_ind, c_ind  = stop, stop
+        l = chr_a.n
+        while None in child:
+            if b[b_ind % l] not in child:
+                child[c_ind % l] = b[b_ind % l]
+                c_ind += 1
+            b_ind += 1
+        return child
+
     def pmx(self,chr_a: Chromosome,chr_b: Chromosome, start:int, stop:int):
         a,b = chr_a.F[:], chr_b.F[:]
         child = [None]*chr_a.n
@@ -247,20 +261,6 @@ class Population():
         for ind,x in enumerate(child):
             if x == None:
                 child[ind] = b[ind]
-        return child
-
-
-    def ox(self, chr_a: Chromosome, chr_b:Chromosome, start:int, stop:int):
-        a,b = chr_a.F[:], chr_b.F[:]
-        child = [None]*chr_a.n
-        child[start:stop] = a[start:stop]
-        b_ind, c_ind  = stop, stop
-        l = chr_a.n
-        while None in child:
-            if b[b_ind % l] not in child:
-                child[c_ind % l] = b[b_ind % l]
-                c_ind += 1
-            b_ind += 1
         return child
 
     @genetic_operation('crossover')
@@ -303,6 +303,9 @@ if __name__ == "__main__":
             [0, 5, 4, 2, -1, 6],
             [20, 0, 2, 12, 6, -1]
         ]
+    example = SrflpChromosome(n,L,C)
+    example.F = [0,2,4,3,1,5]
+
     pop = Population([SrflpChromosome(n,L,C), SrflpChromosome(n,L,C), SrflpChromosome(n,L,C), SrflpChromosome(n,L,C)])
     # print(pop.selection_rank(2))
     # print(pop.selection_rand(2))

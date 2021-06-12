@@ -27,18 +27,18 @@ services:
       retries: 10
     command: bash -c "cd .. && ls -l  && ./entrypoint.sh"
 
-  # srflp_db:
-  #   container_name: srflp_db
-  #   build:  
-  #     context: ./mysql
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=root
-  #     - MYSQL_DATABASE=srflp
+  srflp_db:
+    container_name: srflp_db
+    build:  
+      context: ./mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=srflp
 
-  # srflp_platform:
-  #   ports:
-  #     - '8000:8080'
-  #   container_name: srflp_platform
-  #   build: ./platform
-  #   volumes:
-  #     - ./platform:/srflp-platform
+  srflp_platform:
+    ports:
+      - '8000:8080'
+    container_name: srflp_platform
+    build: ./platform
+    volumes:
+      - ./platform:/srflp-platform

@@ -8,9 +8,6 @@ class SftpStorage(object):
         self.cnopts = pysftp.CnOpts()
         # This is set to none for easier usage, with a live server we would need to enable handshake
         self.cnopts.hostkeys, self.host, self.username, self.password = None, host, username, password
-        
-
-
     
     def upload_file(self, local_file, destionation_path: str):
         with pysftp.Connection(

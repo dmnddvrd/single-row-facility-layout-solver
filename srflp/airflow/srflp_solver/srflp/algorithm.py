@@ -57,5 +57,5 @@ class SrflpAlgorithm:
 
 
     @staticmethod
-    def genetic_algorithm(srflp_chromosome: SrflpChromosome,popupation_size=10,selection_type=None, crossover_type=None, mutation_type=None):
+    def genetic_algorithm(srflp_chromosome: SrflpChromosome, population_size, selection_type, mutation_type, crossover_type, p_c = 0.5, p_m = 0.5):
         pass

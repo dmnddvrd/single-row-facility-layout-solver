@@ -5,10 +5,10 @@ import srflp.utils.config as config
 
 class SrflpChromosomeGenerator:
  
-    MIN_COST = config.get('min_cost')
-    MAX_COST = config.get('max_cost')
-    MIN_LENGTH = config.get('min_length')
-    MAX_LENGTH = config.get('max_length')
+    MIN_COST = 5
+    MAX_COST = 20
+    MIN_LENGTH = 4
+    MAX_LENGTH = 50
 
     @classmethod
     def generate_sample(cls, n = 6, sample_size=10**4):
