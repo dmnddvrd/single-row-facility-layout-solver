@@ -13,6 +13,7 @@ setup(
     package_dir={"srflp": "srflp"},
     packages=packages,
     install_requires=[
+            'matplotlib',
             'wheel',
             'pandas',
             'numpy',

@@ -1,7 +1,9 @@
 from random import sample
+from srflp.chromosome import Population
 import numpy as np
 from srflp.exception import SrflpError
 import srflp.utils.config as config
+import itertools
 
 class SrflpChromosomeGenerator:
  
@@ -23,4 +25,3 @@ class SrflpChromosomeGenerator:
                 C[i][i] = -1
             C = C.tolist()
             yield SrflpChromosome(n, L, C)
-

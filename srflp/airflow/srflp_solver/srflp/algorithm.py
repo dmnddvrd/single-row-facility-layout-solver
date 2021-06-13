@@ -1,9 +1,10 @@
 import numpy as np
 import itertools
 from srflp.exception import SrflpError
-from srflp.chromosome import SrflpChromosome
+from srflp.chromosome import SrflpChromosome, Population
 from srflp.utils.timer import stopwatch
 import sys
+import random
 
 class SrflpAlgorithm:
 
@@ -18,14 +19,13 @@ class SrflpAlgorithm:
             raise SrflpError(f'Incorrect algorithm provided {algorithm}')
         print(f'Using alogirthm {algorithm}')
         if algorithm == 'RANDOM_PERMUTATION':
-            SrflpAlgorithm.random_permutations(srflp_chromosome, N)
+            return SrflpAlgorithm.random_permutations(srflp_chromosome, N)
         if algorithm == 'BRUTE_FORCE':
-            SrflpAlgorithm.brute_force(srflp_chromosome, N)
+            return SrflpAlgorithm.brute_force(srflp_chromosome, N)
 
 #   Best solution from 1000000 iterations took 51 steps -> [3, 4, 1, 0, 5, 2] -> 2846.0
     @staticmethod
-    @stopwatch
-    def random_permutations(srflp_chromosome: SrflpChromosome, MAX_ITERATIONS = 10**5):
+    def random_permutations(srflp_chromosome: SrflpChromosome, MAX_ITERATIONS = 10_000):
         best_fitness_val = float('inf')
         best_sol = []
         best_sol_iteration_no = 0
@@ -38,8 +38,7 @@ class SrflpAlgorithm:
         print(f'RANDOM PERM: Best solution from {MAX_ITERATIONS} iterations took {best_sol_iteration_no} steps -> {best_sol} -> {best_fitness_val}')
 
     @staticmethod
-    @stopwatch
-    def brute_force(srflp_chromosome: SrflpChromosome, MAX_ITERATIONS = 10**5):
+    def brute_force(srflp_chromosome: SrflpChromosome, MAX_ITERATIONS = 10_000):
         best_fitness_val = float('inf')
         best_sol = []
         best_sol_iteration_no = 0
@@ -54,8 +53,6 @@ class SrflpAlgorithm:
             if i == MAX_ITERATIONS:
                 break
         print(f'BRUTE_FORCE: Best solution from {i} iterations took {best_sol_iteration_no} steps -> {best_sol} -> {best_fitness_val}')
+        return (srflp_chromosome, i, best_sol_iteration_no, best_sol,best_fitness_val)
 
 
-    @staticmethod
-    def genetic_algorithm(srflp_chromosome: SrflpChromosome, population_size, selection_type, mutation_type, crossover_type, p_c = 0.5, p_m = 0.5):
-        pass

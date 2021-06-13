@@ -1,55 +1,71 @@
 from srflp.data.generator import SrflpChromosomeGenerator
 from srflp.algorithm import SrflpAlgorithm
 from srflp.chromosome import SrflpChromosome, Chromosome, Population
+import csv, os, time 
+from datetime import date
+import pandas as pd
+import json, random
+import numpy as np
 
-def main():
-    N = 10**6
-    n = 6
-    L = [20, 10, 16, 20, 10, 10]
-    C = [
-            [-1, 12, 3, 6, 0, 20],
-            [12, -1, 5, 5, 5, 0],
-            [3, 5, -1, 10, 4, 2],
-            [6, 5, 10, -1, 2, 12],
-            [0, 5, 4, 2, -1, 6],
-            [20, 0, 2, 12, 6, -1]
-        ]
-    # x = SrflpChromosome(n,L,C)
-    # pop = Population([x,x,x,x])
-    # SrflpAlgorithm.solve_simple(x, 10000, 'brute_force')
-    # SrflpAlgorithm.solve_simple(x, 10000, 'RANDOM_PERMUTATION')
-def main():
-    for n in range(5,50):
-        for chromosome in SrflpChromosomeGenerator.generate_sample(n):
-            SrflpAlgorithm.solve_simple(chromosome, 100, 'brute_force')
-            SrflpAlgorithm.solve_simple(chromosome, 100, 'RANDOM_PERMUTATION')
+def genetic_algorithm(chr: SrflpChromosome, population_size, mutation_type, crossover_type, p_c, p_m, generations = 100):
+    nr_of_crossovers = int(population_size * p_c)
+    # Creating an initial population:
+    generation = Population()
+    # Generating initial random pop.
+    for i in range(population_size):
+        generation.add(SrflpChromosome(chr.n, chr.L[:], [row[:] for row in chr.C], np.random.permutation(chr.n).tolist()))
+    for i in range(generations):
+        generation.population = sorted(generation.population, key = lambda x:x.fitness)
+        # Crossover: parents from the top 50% of the population is mating
+        for i in range(nr_of_crossovers):
+            parent1 = random.choice(generation.population[:int(population_size/2)])
+            parent2 = random.choice(generation.population[:int(population_size/2)])
+            generation.add(parent1.crossover(parent2, crossover_type))
+            generation.add(parent2.crossover(parent1, crossover_type))
+        # Mutation: Each individual has a p_m chance to mutate
+        for chr in generation.population:
+            if random.uniform(0, 1) < p_m:
+                chr.mutation(mutation_type)
+        # generation.population = sorted(generation.population, key = lambda x:x.fitness)
+        generation.population = random.choices(generation.population, weights=[x.fitness for x in generation.population], k=population_size)
+    return generation.population[-1].fitness
         
+def solve_genetic():
+    df = pd.read_csv('data\solutions\solutions_2021-06-12.csv')
+    statistical_data = []
+    header = ['n','generations', 'population_size', 'mutation_type','p_m','crossover_type','p_c','fitness_val','abs_fitness_val','execution_time', 'execution_time_brute_force', 'err', 'err_percentage', 'exec_time_rate']
+    filename = f'data/solutions/solutions_GA.csv'
+    with open(os.path.abspath(filename), 'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(header)    
+    for i, row in df.iterrows():
+        chr_json = json.loads(row['sol_chrom_json'])
+        abs_fitness_val = float(row["fitness_val"])
+        brute_force_exec_time = float(row["execution_time"])
+        n = chr_json['n']
+        x = SrflpChromosome(n, chr_json['L'], chr_json['C'])  
+        for pop_size in [50, 75, 100]:
+            for mt_type in ['swap', 'insert', 'scramble', 'reverse']:
+                for crossover_type in ['pmx', 'order']:
+                    for p_crossover in [0.4, 0.6, 0.8]:
+                        for p_mutation in [0.2, 0.4, 0.5]:
+                            start_time = time.time()
+                            fitness_val = genetic_algorithm(x, population_size=pop_size,mutation_type=mt_type,
+                                crossover_type=crossover_type, p_c=p_crossover, p_m=p_mutation, generations = 50)
+                            time_delta = float(time.time() - start_time)
+                            time_delta_str = str(time_delta)[:6]
+                            err = fitness_val - abs_fitness_val
+                            err_percentage = (fitness_val * 100) / abs_fitness_val - 100
+                            statistical_data.append([
+                                n, 500, pop_size, mt_type, p_mutation, crossover_type, p_crossover, fitness_val, abs_fitness_val, time_delta_str, brute_force_exec_time, err, err_percentage, brute_force_exec_time/time_delta 
+                            ])
+            print(pop_size)
+        print(i)
+        with open(os.path.abspath(filename), 'a') as f:
+            writer = csv.writer(f)
+            writer.writerows(statistical_data)
+        statistical_data = []
+
 if __name__ == "__main__":
-    main()
+    solve_genetic()
 
-
-def generate_test_data():
-        for n in range(5,50):
-            chromosomes = []
-            for chromosome in SrflpChromosomeGenerator.generate_sample(n, ):
-                SrflpAlgorithm.solve_simple(chromosome, 100, 'brute_force')
-                chromosomes.append(chromosome)
-
-# BRUTE_FORCE: Best solution from 720 iterations took 29 steps -> (0, 2, 1, 5, 3, 4) -> 2846.0
-# Function brute_force execution time: 0.011421442031860352
-# Using alogirthm RANDOM_PERMUTATION
-# RANDOM PERM: Best solution from 10000 iterations took 28 steps -> [1, 4, 3, 5, 0, 2] -> 2846.0
-# Function random_permutations execution time: 0.17294716835021973
-# airflow@3b6e6e3ea7c9:~/srflp-solver/srflp$ python main.py
-# Using alogirthm BRUTE_FORCE
-# BRUTE_FORCE: Best solution from 720 iterations took 29 steps -> (0, 2, 1, 5, 3, 4) -> 2846.0
-# Function brute_force execution time: 0.010756254196166992
-# Using alogirthm RANDOM_PERMUTATION
-# RANDOM PERM: Best solution from 10000 iterations took 36 steps -> [0, 4, 1, 3, 2, 5] -> 2846.0
-# Function random_permutations execution time: 0.1765117645263672
-# airflow@3b6e6e3ea7c9:~/srflp-solver/srflp$ python main.py
-# Using alogirthm BRUTE_FORCE
-# BRUTE_FORCE: Best solution from 720 iterations took 29 steps -> (0, 2, 1, 5, 3, 4) -> 2846.0
-# Function brute_force execution time: 0.010523557662963867
-# Using alogirthm RANDOM_PERMUTATION
-# RANDOM PERM: Best solution from 10000 iterations took 35 steps -> [3, 4, 1, 2, 0, 5] -> 2846.0
