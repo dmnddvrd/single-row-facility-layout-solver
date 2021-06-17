@@ -1,5 +1,7 @@
 import random
 def pmx(a,b, start, stop):
+    a = a.F
+    b = b.F
     child = [None]*len(a)
     # Copy a slice from first parent:
     child[start:stop] = a[start:stop]
@@ -27,8 +29,6 @@ def pmx_pair(a,b):
 if __name__ == "__main__":
     a = [1,2,3,4,5,6,7,8,9]
     b = [9,3,7,8,2,6,5,1,4]
-    # a = [2,4,7,1,3,6,8,9,5]
-    # b = [5,9,8,6,2,4,1,3,7]
     c,d = pmx_pair(a,b)
     print("Parents:")
     print(a)

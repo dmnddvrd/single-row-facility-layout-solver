@@ -33,7 +33,7 @@ def genetic_algorithm(chr: SrflpChromosome, population_size, mutation_type, cros
 def solve_genetic():
     df = pd.read_csv('data\solutions\solutions_2021-06-12.csv')
     statistical_data = []
-    header = ['n','generations', 'population_size', 'mutation_type','p_m','crossover_type','p_c','fitness_val','abs_fitness_val','execution_time', 'execution_time_brute_force', 'err', 'err_percentage', 'exec_time_rate']
+    header = ['i', 'n','generations', 'population_size', 'mutation_type','p_m','crossover_type','p_c','fitness_val','abs_fitness_val','execution_time', 'execution_time_brute_force', 'err', 'err_percentage', 'exec_time_rate']
     filename = f'data/solutions/solutions_GA.csv'
     with open(os.path.abspath(filename), 'w') as f:
         writer = csv.writer(f)
@@ -44,21 +44,24 @@ def solve_genetic():
         brute_force_exec_time = float(row["execution_time"])
         n = chr_json['n']
         x = SrflpChromosome(n, chr_json['L'], chr_json['C'])  
-        for pop_size in [50, 75, 100]:
-            for mt_type in ['swap', 'insert', 'scramble', 'reverse']:
-                for crossover_type in ['pmx', 'order']:
-                    for p_crossover in [0.4, 0.6, 0.8]:
-                        for p_mutation in [0.2, 0.4, 0.5]:
-                            start_time = time.time()
-                            fitness_val = genetic_algorithm(x, population_size=pop_size,mutation_type=mt_type,
-                                crossover_type=crossover_type, p_c=p_crossover, p_m=p_mutation, generations = 50)
-                            time_delta = float(time.time() - start_time)
-                            time_delta_str = str(time_delta)[:6]
-                            err = fitness_val - abs_fitness_val
-                            err_percentage = (fitness_val * 100) / abs_fitness_val - 100
-                            statistical_data.append([
-                                n, 500, pop_size, mt_type, p_mutation, crossover_type, p_crossover, fitness_val, abs_fitness_val, time_delta_str, brute_force_exec_time, err, err_percentage, brute_force_exec_time/time_delta 
-                            ])
+        for pop_size in [75]:
+            # for mt_type in ['swap', 'insert', 'scramble', 'reverse']:
+            for mt_type in ['insert']:
+                # for crossover_type in ['pmx', 'order']:
+                for crossover_type in ['pmx']:
+                    for p_crossover in [0.8]:
+                        for p_mutation in [0.05]:
+                            for _x in range(10):
+                                start_time = time.time()
+                                fitness_val = genetic_algorithm(x, population_size=pop_size,mutation_type=mt_type,
+                                    crossover_type=crossover_type, p_c=p_crossover, p_m=p_mutation, generations = 1000)
+                                time_delta = float(time.time() - start_time)
+                                time_delta_str = str(time_delta)[:6]
+                                err = fitness_val - abs_fitness_val
+                                err_percentage = (fitness_val * 100) / abs_fitness_val - 100
+                                statistical_data.append([
+                                    i, n, 500, pop_size, mt_type, p_mutation, crossover_type, p_crossover, fitness_val, abs_fitness_val, time_delta_str, brute_force_exec_time, err, err_percentage, brute_force_exec_time/time_delta 
+                                ])
             print(pop_size)
         print(i)
         with open(os.path.abspath(filename), 'a') as f:

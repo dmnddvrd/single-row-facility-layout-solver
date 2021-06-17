@@ -59,9 +59,16 @@ def get_err_by_n():
     ax.set(xlabel='egyed mérete(n)', ylabel='futási idő (s)', title='GA megközeltítés hibája')
     ax.grid()
     fig.savefig('./charts/ga_err_by_n.png')
-    print(df.groupby(['crossover_type','n'])['err_percentage'].mean())
-    print(df.groupby(['p_c','n'])['err_percentage'].mean())
-    print(df.groupby(['p_m','n'])['err_percentage'].mean())
+    print(df.groupby(['crossover_type'])['err_percentage'].mean())
+    print(df.groupby(['mutation_type'])['err_percentage'].mean())
+    print(df.groupby(['p_c'])['err_percentage'].mean())
+    print(df.groupby(['p_m'])['err_percentage'].mean())
+    print(df.groupby(['population_size'])['err_percentage'].mean())
+    
+    print(df.groupby(['i'])['err_percentage'].mean())
+    print(df.groupby(['i'])['fitness_val'].mean())
+    print(df.groupby(['i'])['fitness_val'].std())
+    
 
     
 if __name__ == '__main__':
