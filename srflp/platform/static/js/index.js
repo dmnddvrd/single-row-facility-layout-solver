@@ -1,156 +1,38 @@
-let reservations = [];
+$(function () {
+  $("form").submit(function (ev) {
+    ev.preventDefault();
 
-const createReservation = (data) => {
-  $.ajax('/reservations/create', {
-    type: 'post',
-    data,
-    dataType: 'json',
-    success(response) {
-      return response;
-    },
-    error(err) {
-      console.log(err);
-      return false;
-    },
-  });
-};
+    var form = $(this);
+    var data = {};
 
-const confirmReservationForm = (scheduleData) => {
-  let content = '<table style="width:100%" class="reservations-form-table">'
-  + '<tr>'
-  + ' <th>ID</th>'
-  + ' <th>Reservation Note</th>'
-  + ' <th>Time</th>'
-  + ' </tr>';
+    form.find("input, select, textarea").each(function () {
+      data[$(this).attr("name")] = $(this).val();
+    });
 
-  reservations.filter((r) => r.schedule_id === parseInt(scheduleData.id, 10)).forEach((val) => {
-    content += `<tr><td>${val.id}</td><td>${val.reservation_for}</td><td>${val.created_at}</td></tr>`;
-  });
-  content += '</table></form>'
-  + '<form action="" class="formName">'
-  + '<h1>Creat a reservation:</h1>'
-  + '<div class="form-group" style ="display:flex; flex-direction: column;">'
-  + ''
-  + '<label>Enter a Name for your reservation</label>'
-  + `<input type="text" placeholder="${scheduleData.user_name}" class="name form-control" required />`
-  + ''
-  + '<label>Nr of seats (max:4)</label>'
-  + '<input type="number" placeholder="1" min="1" max="4" class="nr_of_seats form-control" required />'
-  + ''
-  + '</div>';
+    var isJson = true;
 
-  $.confirm({
-    title: `Reservations for ${scheduleData.from} -> ${scheduleData.to}(${scheduleData.type}) at the Price of ${scheduleData.price}`,
-    content,
-    buttons: {
-      formSubmit: {
-        text: 'Submit',
-        btnClass: 'btn-blue',
-        action() {
-          const copy = scheduleData;
-          copy.reservation_for = this.$content.find('.name').val();
-          copy.nr_of_seats = this.$content.find('.nr_of_seats').val();
-          copy.schedule_id = copy.id;
-          console.log(copy);
-          createReservation(copy);
-          $.ajax('/reservations/all', {
-            type: 'get',
-            dataType: 'json',
-            success(response) {
-              reservations = response.reservations;
-              console.log(reservations);
-            },
-            error(err) {
-              console.log(err);
-              return false;
-            },
-          });
+    try {
+      data["srflp_json"] = data["srflp_json"].replace(/\"\"/g, '"');
+      JSON.parse(data["srflp_json"]);
+    } catch (err) {
+      isJson = false;
+    }
+
+    if (isJson) {
+      $.post({
+        url: "/problems/create",
+        data: data,
+        dataType: "json",
+        success(response) {
+          console.log(response);
+          window.location.reload();
         },
-      },
-      cancel() {
-      },
-    },
-  });
-};
-
-
-$(document).ready(() => {
-  $('#schedule-btn').click(() => {
-    $.ajax('/schedules/all', {
-      type: 'get',
-      data: {
-        from: $('#from').val() === '' ? undefined : $('#from').val(),
-        to: $('#to').val() === '' ? undefined : $('#to').val(),
-        // TODO: come up with better solution
-        minPrice: $('#minPrice').val() === '' ? 0 : $('#minPrice').val(),
-        maxPrice: $('#maxPrice').val() === '' ? 99999 : $('#maxPrice').val(),
-      },
-      dataType: 'json',
-      success(data) {
-        const timetable = data.schedules;
-        $('.schedule').remove();
-        timetable.forEach((item) => {
-          if (item) {
-            $('#schedules-table').append(`
-            <tr class="schedule">
-              <td>${item.id}</td>
-              <td>${item.from}</td>
-              <td>${item.to}</td>
-              <td>${item.days}</td>
-              <td>${item.hour}:00</td>
-              <td>${item.type}</td>
-              <td>${item.price} RON</td>
-            </tr>`);
-          }
-        });
-        $('#schedules-table')
-          .fadeOut(100)
-          .fadeIn(100);
-      },
-      error(err) {
-        console.log(err);
-      },
-    });
-  });
-  $('tr.schedule').click((e) => {
-    let scheduleData = {};
-    const clickedRow = e.target.parentNode.cells;
-    scheduleData = {
-      id: clickedRow[0].innerHTML,
-      user_name: 'Edi',
-      user_id: 1,
-      from: clickedRow[1].innerHTML,
-      to: clickedRow[2].innerHTML,
-      hour: clickedRow[3].innerHTML,
-    };
-    let schedule = {};
-    $.ajax('/schedules/all', {
-      type: 'get',
-      dataType: 'json',
-      success(response) {
-        const schedules = Object.values(response.schedules);
-        schedule = schedules.filter((elem) => elem.id === parseInt(scheduleData.id, 10));
-        // updating the selected schedule's price
-        scheduleData.price = schedule[0].price;
-        scheduleData.type = schedule[0].type;
-        confirmReservationForm(scheduleData);
-      },
-      error(err) {
-        console.log(err);
-        return false;
-      },
-    });
-  });
-  $.ajax('/reservations/all', {
-    type: 'get',
-    dataType: 'json',
-    success(response) {
-      reservations = response.reservations;
-      console.log(reservations);
-    },
-    error(err) {
-      console.log(err);
-      return false;
-    },
+        error(err) {
+          console.error(err);
+        },
+      });
+    } else {
+      alert("Input value must be a valid JSON!");
+    }
   });
 });

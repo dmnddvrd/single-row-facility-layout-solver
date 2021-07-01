@@ -32,6 +32,7 @@ RUN apt-get update -yqq && \
     vim \
     locales \
     dos2unix \
+    python-mysqldb \
     && apt-get clean
 
 COPY ./requirements-python3.8.txt /requirements-python3.8.txt
@@ -63,8 +64,6 @@ USER airflow
 
 # Set workdir (it's like a cd inside the container)
 WORKDIR ${AIRFLOW_HOME}/srflp-solver
-
-
 
 # Expose ports (just to indicate that this container needs to map port)
 EXPOSE 8080

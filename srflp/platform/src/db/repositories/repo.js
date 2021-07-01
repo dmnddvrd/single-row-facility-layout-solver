@@ -1,15 +1,18 @@
-const knex = require('knex'),
-  knexFile = require('../../../knexfile').development;
+const knex = require("knex"),
+  knexFile = require("../../../knexfile").development;
 
 const db = knex(knexFile);
 
-const insertData = (tableName, data) => db(tableName)
-  .insert(data)
-  .then((resp) => resp)
-  .catch((error) => console.log(error));
+const insertData = (tableName, data) =>
+  db(tableName)
+    .insert(data)
+    .then((resp) => resp)
+    .catch((error) => console.log(error));
 
-
-const selectData = (tableName, options = { fields: [], filteringConditions: [] }) => {
+const selectData = (
+  tableName,
+  options = { fields: [], filteringConditions: [] }
+) => {
   const { fields, filteringConditions } = options;
 
   return db(tableName)
@@ -19,7 +22,7 @@ const selectData = (tableName, options = { fields: [], filteringConditions: [] }
         builder.where(...condition);
       });
     })
-    .orderBy('id')
+    .orderBy("id")
     .then((data) => data);
 };
 
@@ -36,7 +39,10 @@ const deleteData = (tableName, options = { filteringConditions: [] }) => {
     .then((data) => data);
 };
 
-const updateData = (tableName, options = { fields: {}, filteringConditions: [] }) => {
+const updateData = (
+  tableName,
+  options = { fields: {}, filteringConditions: [] }
+) => {
   const { fields, filteringConditions } = options;
 
   return db(tableName)

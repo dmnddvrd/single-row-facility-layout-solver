@@ -1,61 +1,140 @@
 <!DOCTYPE html>
 <html lang="hu">
 
-    <head>
-        <link rel="stylesheet" href="/css/style.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-        <script src="/js/forms.js"></script>
-        <script src="/js/index.js"></script>
-        <title>Browse our timetable</title>
-    </head>
-
-    <div id="header">
-        <div id="logo" onclick="location.href = '/admin'">Go to Admin Panel</div>
-        <div id="user" class="dropdown">
-            <div id="name" class="dropbtn">
-                {{#ifDefined name }}
-                    {{this}}
-                    </div>
-                    <div class="dropdown-content">
-                        <a href="/my-reservations">My reservations</a>
-                        <a href="/logout">Log out</a>
-                    </div>
-                {{else}}
-                    <a href="/login">Log in</a></div>
-                {{/ifDefined}}
-
-        </div>
-    </div>
-            <div id="spacer">
-                <br>
-                <!-- Element to make space between the other two elements -->
-            </div>
-
-            <div id="query">
-                <form action="/schedules/all">
-                    <label for="from">From</label>
-                    <input type="text" id="from" name="from" placeholder="Satu mare">
-                    <br>
-                    <label for="to">To</label>
-                    <input type="text" id="to" name="to" placeholder="Cluj-Napoca">
-                    <br>
+  <head>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <title>SRFLP Solver</title>
+    <script>
+    function stop_problem(id) {
+        $.post({
+          url: "/problems/stop",
+          data: { id },
+          dataType: "json",
+          success(response) {
+            console.log(response);
+            window.location.reload();
+          },
+          error(err) {
+            console.error(err);
+          },
+        });
+      }
+      function show_params(id, generations, pop_size, mutation_type, crossover_type,
+        p_mut, p_cross, created_at, status) {
+        var content = `Mutation: ${mutation_type} - ${p_mut}%<br>` + 
+        `Crossover: ${crossover_type} - ${p_cross}%<br>` + 
+        `No. of generations: ${generations}<br>` + 
+        `Population size: ${pop_size}<br>` + 
+        `Selection(Default): Roulette<br>` ;
+        $.alert({
+            title: `#${id} - ${status}<br>`,
+            content,
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container my-5">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-8">
+          <table class="table">
+            <thead class="thead-light">
+              <th>#</th>
+              <th>Start</th>
+              <th>Duration(s)</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </thead>
+            <tbody>
+              {{#each problems}}
+                <tr data-type="{{ status }}">
+                  <td><b>{{ id }}</b></td>
+                  <td>{{ created_at }}</td>
+                  {{#if execution_time }}
+                    <td>{{ execution_time }}</td>
+                  {{else}}
+                    <td>N/A</td>
+                  {{/if}}
+                  <td>{{ status }}</td>
+                  <td>
+    
+                    <button class="btn btn-primary" onclick="show_params({{id}},{{generations}},{{population_size}},'{{mutation_type}}','{{crossover_type}}',{{p_mutation}},{{p_crossover}},'{{created_at}}','{{status}}')">Show params</button>
+                    {{#ifEquals status "Finished"}}
+                        <button class="btn btn-success">Show Result</button>
+                    {{/ifEquals}}
                     
-                    <label for="minPrice">Minimum price(RON)</label>
-                    <input type="text" id="minPrice" name="minPrice" placeholder="0">
-                    <br>
-                    
-                    <label for="maxPrice">Maximum price(RON)</label>
-                    <input type="text" id="maxPrice" name="maxPrice" placeholder="100">
-                    <br>
-                
-                    <input id="schedule-btn" type="button" value="Find Routes">
-                  </form>
-            </div>
-
+                    {{#ifEquals status "In Progress"}}
+                        <button class="btn btn-danger" onclick="stop_problem({{ id }} )">Stop</button>
+                    {{/ifEquals}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
         </div>
+        <div class="col-sm-9 col-md-7 col-lg-4 mx-auto">
+          <div class="card card-signin">
+            <div class="card-body">
+              <h5 class="card-title text-center">Solve issue</h5>
+              <form class="form-signin">
+                  <div class="container">
+                        <div class="form-group">
+                          <label for="number_of_generations">No. of Generations</label>
+                          <input name="number_of_generations" type="range" class="form-control-range" id="number_of_generations" min="300" steps="100" max="2000" onInput="$('#rangeval_number_of_generations').html($(this).val())">
+                          <span id="rangeval_number_of_generations">500<!-- Default value --></span>
+                        </div>
+                  </div>
+                  <div class="container">
+                        <div class="form-group">
+                          <label for="population_size">Population size</label>
+                          <input name="population_size" type="range" class="form-control-range" id="population_size" min="10" max="100" value="75" onInput="$('#rangeval_population_size').html($(this).val())">
+                          <span id="rangeval_population_size">75<!-- Default value --></span>
+                        </div>
+                  </div>
+                  <div class="form-group mx-2">
+                      <label for="mutation_type">Mutation type</label>
+                      <select name="mutation_type" class="form-control" id="mutation_type">
+                          <option>Insert</option>
+                          <option>Scramble</option>
+                          <option>Reverse</option>
+                      </select>
+                  </div>
+                  <div class="container">
+                        <div class="form-group">
+                          <label for="probability_of_mutation">Probability of Mutation</label>
+                          <input name="probability_of_mutation" type="range" class="form-control-range" id="probability_of_mutation" min="0" max="1" step="0.01" value="0.05" onInput="$('#rangeval_probability_of_mutation').html($(this).val())">
+                          <span id="rangeval_probability_of_mutation">0.05<!-- Default value --></span>
+                        </div>
+                  </div>
+                  <div class="form-group mx-2">
+                      <label for="crossover_type">Crossover type</label>
+                      <select name="crossover_type" class="form-control" id="crossover_type">
+                          <option value="pmx">Partially Mapped Crossover</option>
+                          <option value="order">Order Crossover</option>
+                      </select>
+                  </div>
+                  <div class="container">
+                        <div class="form-group">
+                          <label for="probability_of_crossover">Probability of Crossover</label>
+                          <input name="probability_of_crossover" type="range" class="form-control-range" id="probability_of_crossover" min="0" max="1" step="0.01" value="0.85" onInput="$('#rangeval_probability_of_crossover').html($(this).val())">
+                          <span id="rangeval_probability_of_crossover">0.85<!-- Default value --></span>
+                        </div>
+                  </div>
+                  <div class="form-label-group">
+                      <textarea placeholder="SRFLP JSON" name="srflp_json" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                  </div>
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Solve</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <script src="/js/index.js"></script>
+  </body>
 </html>
