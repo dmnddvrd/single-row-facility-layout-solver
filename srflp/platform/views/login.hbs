@@ -2,8 +2,9 @@
 <html lang="hu">
 
   <head>
-    <link rel="stylesheet" href="/css/style.css">
+    {{!-- <link rel="stylesheet" href="/css/style.css"> --}}
     <link rel="stylesheet" href="/css/login.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
@@ -12,19 +13,47 @@
     <title>Log in</title>
   </head>
 
-  <div id="content">
+  {{!-- <div id="content">
     <div class="login-form-container">
       <form class="login-form">
         <div class="title-container">
           Log in
         </div>
         <div id="err-msg"></div>
-        <input type="text" name="email" id="email" placeholder="Email" type="email" value="deim1612@trains.com">
+        <input type="text" name="email" id="email" placeholder="Email" type="email" value="deim1612@srflp.com">
         <input type="password" name="password" id="password" placeholder="Password" value="root">
         <input id="login-btn" type="button" value="Log in">
         <a href="./register">Create an account</a>
       </form>
     </div>
   </div>
-    
+     --}}
+
+    <body>
+    <div class="container">
+        <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5">
+            <div class="card-body">
+                <h5 class="card-title text-center">Sign In</h5>
+                <form class="form-signin">
+                <div class="form-label-group">
+                    <input type="email" id="email" class="form-control" placeholder="deim1612@srflp.com" value="deim1612@srflp.com" required autofocus>
+                    <label for="email">Email address</label>
+                </div>
+
+                <div class="form-label-group">
+                    <input type="password" id="password" class="form-control" placeholder="Password" required>
+                    <label for="password">Password</label>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block text-uppercase" id="login-btn" type="submit">Sign in</button>
+                <hr class="my-4">
+                <button class="btn btn-lg btn-info btn-block text-uppercase" type="submit"><a href="./register" style="color:white;">Create an account</a></button>
+                </form>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    </body>
 </html>

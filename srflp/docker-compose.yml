@@ -1,15 +1,14 @@
 version: "3.5"
 
 services:
-  
   sftp:
     ports:
-      - '22:22'
+      - "22:22"
     container_name: sftp
     build: ./sftp-storage
     volumes:
       - ./sftp-storage/contents:/home/srflp/sftp/
-      
+
   airflow:
     build: ./airflow
     restart: always
@@ -21,7 +20,7 @@ services:
     ports:
       - 8080:8080
     healthcheck:
-      test: [ "CMD", "nc", "-z", "airflow", "8080" ]
+      test: ["CMD", "nc", "-z", "airflow", "8080"]
       timeout: 45s
       interval: 10s
       retries: 10
@@ -29,7 +28,7 @@ services:
 
   srflp_db:
     container_name: srflp_db
-    build:  
+    build:
       context: ./mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
@@ -37,8 +36,9 @@ services:
 
   srflp_platform:
     ports:
-      - '8000:8080'
+      - "8000:8080"
     container_name: srflp_platform
     build: ./platform
     volumes:
-      - ./platform:/srflp-platform
+      - ./platform:/usr/src/app
+    command: bash -c "npm install && nodemon"

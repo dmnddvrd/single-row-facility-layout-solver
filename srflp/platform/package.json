@@ -1,5 +1,5 @@
 {
-  "name": "lab-deim1612",
+  "name": "srflp_platform",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/ubb-webprog/labs2020/lab-deim1612.git"
+    "url": ""
   },
   "author": "Dimand Edvard",
   "license": "ISC",

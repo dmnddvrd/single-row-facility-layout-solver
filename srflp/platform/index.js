@@ -5,6 +5,7 @@ const express = require('express'),
   path = require('path'),
   morgan = require('morgan'),
   bodyParser = require('body-parser'),
+  problemRouter = require('./src/routes/problems'),
   usersRouter = require('./src/routes/users');
 
 
@@ -37,6 +38,7 @@ app.disable('etag');
 
 
 app.use('/users', usersRouter);
+app.use('/problems', problemRouter);
 
 app.get('/admin', async (req, res) => {
   let email;
